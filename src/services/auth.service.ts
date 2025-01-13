@@ -1,3 +1,5 @@
+import { configure } from "../configs/config";
+import { EmailTypeEnum } from "../enums/email-type.enum";
 import { ApiError } from "../errors/api-error";
 import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
 import {
@@ -7,6 +9,7 @@ import {
 } from "../interfaces/user.interface";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
+import { emailService } from "./email.service";
 import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
 import { userService } from "./user.service";
@@ -23,6 +26,11 @@ class AuthService {
       role: user.role,
     });
     await tokenRepository.create({ ...tokens, _userId: user._id });
+    await emailService.sendEmail(
+      EmailTypeEnum.WELCOME,
+      "delight.lviv@gmail.com",
+      { name: user.name, frontUrl: configure.frontUrl },
+    );
     return { user, tokens };
   }
 
@@ -59,6 +67,25 @@ class AuthService {
     });
     await tokenRepository.create({ ...tokens, _userId: tokenPayload.userId });
     return tokens;
+  }
+  public async logout(
+    tokenPayload: ITokenPayload,
+    tokenId: string,
+  ): Promise<void> {
+    const user = await userRepository.getUserById(tokenPayload.userId);
+    await tokenRepository.deleteByParams({ _id: tokenId });
+    await emailService.sendEmail(EmailTypeEnum.LOGOUT, user.email, {
+      name: user.name,
+      frontUrl: configure.frontUrl,
+    });
+  }
+  public async logoutAll(tokenPayload: ITokenPayload): Promise<void> {
+    const user = await userRepository.getUserById(tokenPayload.userId);
+    await tokenRepository.deleteAllByParams({ _userId: tokenPayload.userId });
+    await emailService.sendEmail(EmailTypeEnum.LOGOUT, user.email, {
+      name: user.name,
+      frontUrl: configure.frontUrl,
+    });
   }
 }
 export const authService = new AuthService();
