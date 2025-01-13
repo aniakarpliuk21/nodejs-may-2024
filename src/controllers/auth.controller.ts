@@ -1,7 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 
+import { IVerifyToken } from "../interfaces/action-token.interface";
 import { ITokenPayload } from "../interfaces/token.interface";
-import { IUserCreateDto, IUserLoginDto } from "../interfaces/user.interface";
+import {
+  IForgotPassword,
+  IForgotPasswordSet,
+  IUserCreateDto,
+  IUserLoginDto,
+} from "../interfaces/user.interface";
 import { authService } from "../services/auth.service";
 
 class AuthController {
@@ -51,6 +57,40 @@ class AuthController {
       const tokenPayload = req.res.locals.tokenPayload as ITokenPayload;
       const result = await authService.logoutAll(tokenPayload);
       res.json(result);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const dto = req.body as IForgotPassword;
+      await authService.forgotPassword(dto);
+      res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+  public async forgotPasswordSet(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const tokenPayload = req.res.locals.tokenPayload as ITokenPayload;
+      const dto = req.body as IForgotPasswordSet;
+      await authService.forgotPasswordSet(dto, tokenPayload);
+      res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+  public async verify(req: Request, res: Response, next: NextFunction) {
+    try {
+      const tokenPayload = req.res.locals.tokenPayload as ITokenPayload;
+      const dto = req.body as IVerifyToken;
+      await authService.verify(dto, tokenPayload);
+      res.sendStatus(204);
     } catch (e) {
       next(e);
     }

@@ -13,4 +13,8 @@ export const configure = {
   jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
   smtpPassword: process.env.SMTP_PASSWORD,
   smtpEmail: process.env.SMPT_EMAIL,
+  actionForgotPasswordSecret: process.env.ACTION_FORGOT_PASSWORD_SECRET,
+  actionForgotPasswordExpiresIn: process.env.ACTION_FORGOT_PASSWORD_EXPIRES_IN,
+  actionEmailVerificationSecret: process.env.ACTION_EMAIL_VERIFICATION_SECRET,
+  actionEmailVerificationExpiresIn: process.env.ACTION_EMAIL_VERIFICATION_EXPIRES_IN,
 };

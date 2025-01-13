@@ -1,6 +1,7 @@
 import * as jwt from "jsonwebtoken";
 
 import { configure } from "../configs/config";
+import { ActionTokenTypeEnum } from "../enums/action-token.type.enum";
 import { TokenEnum } from "../enums/token.enum";
 import { ApiError } from "../errors/api-error";
 import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
@@ -19,7 +20,31 @@ class TokenService {
     };
   }
 
-  public verifyToken(token: string, type: TokenEnum): ITokenPayload {
+  public generateActionTokens(
+    payload: ITokenPayload,
+    type: ActionTokenTypeEnum,
+  ): string {
+    let secret: string;
+    let expiresIn: string;
+    switch (type) {
+      case ActionTokenTypeEnum.FORGOT_PASSWORD:
+        secret = configure.actionForgotPasswordSecret;
+        expiresIn = configure.actionForgotPasswordExpiresIn;
+        break;
+      case ActionTokenTypeEnum.EMAIL_VERIFICATION:
+        secret = configure.actionEmailVerificationSecret;
+        expiresIn = configure.actionEmailVerificationExpiresIn;
+        break;
+      default:
+        throw new ApiError("Invalid action token type", 500);
+    }
+    return jwt.sign(payload, secret, { expiresIn });
+  }
+
+  public verifyToken(
+    token: string,
+    type: TokenEnum | ActionTokenTypeEnum,
+  ): ITokenPayload {
     try {
       let secret: string;
       switch (type) {
@@ -28,6 +53,12 @@ class TokenService {
           break;
         case "refresh":
           secret = configure.jwtRefreshSecret;
+          break;
+        case ActionTokenTypeEnum.FORGOT_PASSWORD:
+          secret = configure.actionForgotPasswordSecret;
+          break;
+        case ActionTokenTypeEnum.EMAIL_VERIFICATION:
+          secret = configure.actionEmailVerificationSecret;
           break;
         default:
           throw new ApiError("Invalid token type", 401);
