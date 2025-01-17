@@ -69,4 +69,8 @@ export class UserValidator {
       "string.required": "Email is a required field",
     }),
   });
+  public static changePassword = Joi.object({
+    newPassword: this.password.required(),
+    oldPassword: this.password.required(),
+  });
 }

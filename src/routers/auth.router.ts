@@ -30,14 +30,20 @@ router.post(
   authController.logoutAll,
 );
 router.post(
-  "/forgot-password",
+  "/password/forgot",
   commonMiddleware.validateBody(UserValidator.forgotPassword),
   authController.forgotPassword,
 );
 router.put(
-  "/forgot-password",
+  "/password/forgot",
   authMiddleware.checkActionToken(ActionTokenTypeEnum.FORGOT_PASSWORD),
   authController.forgotPasswordSet,
+);
+router.put(
+  "/password",
+  commonMiddleware.validateBody(UserValidator.changePassword),
+  authMiddleware.checkAccessToken,
+  authController.changePassword,
 );
 router.post(
   "/verify",
