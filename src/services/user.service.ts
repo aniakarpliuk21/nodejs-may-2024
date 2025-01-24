@@ -31,7 +31,7 @@ class UserService {
     );
     const updatedUser = await userRepository.updateUser(user._id, { avatar });
     if (user.avatar) {
-      // await s3Service.deleteFile(user.avatar);
+      await s3Service.deleteFile(user.avatar);
     }
     return updatedUser;
   }
