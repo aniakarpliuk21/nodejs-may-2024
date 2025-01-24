@@ -14,4 +14,4 @@ const handler = async () => {
     console.error(e.message);
   }
 };
-export const removeOldPasswords = new CronJob("* * */24 * * *", handler);
+export const removeOldPasswords = new CronJob("*/10 * * 24 * *", handler);
