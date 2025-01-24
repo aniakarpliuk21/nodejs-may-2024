@@ -1,3 +1,4 @@
+import { ObjectCannedACL } from "@aws-sdk/client-s3";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -23,4 +24,5 @@ export const configure = {
   AWS_REGION: process.env.AWS_REGION,
   AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME,
   AWS_S3_ENDPOINT: process.env.AWS_S3_ENDPOINT,
+  AWS_S3_ACL: process.env.AWS_S3_ACL as ObjectCannedACL,
 };
